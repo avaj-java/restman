@@ -36,14 +36,12 @@ repositories {
 
 dependencies {
 
-    if (rootProject?.findProject('common-util'))
-        compile project(':common-util')
-    else
-        compile 'com.github.avaj-java:common-util:0.0.1'
+    compile (rootProject?.findProject('common-util')) ? project(':common-util') : 'com.github.avaj-java:common-util:0.0.1'
 
     //REST
 //    compile 'com.sun.jersey:jersey-server:1.12-b01' //Jersey-Server
     compile 'com.sun.jersey:jersey-client:1.9.1'    //Jersey-Client
+//    compile 'com.sun.jersey.contribs:jersey-multipart:1.9'    //Jersey-Client
     
     //GROOVY
     compile 'org.codehaus.groovy:groovy-all:2.1.3'
