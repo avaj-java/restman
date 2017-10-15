@@ -5,11 +5,15 @@ import com.sun.jersey.api.client.ClientResponse
 import com.sun.jersey.api.client.WebResource
 import com.sun.jersey.core.util.MultivaluedMapImpl
 import groovy.json.JsonOutput
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * Created by sujkim on 2017-03-10.
  */
 class RestMan {
+
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     static final String GET = 'GET'
     static final String POST = 'POST'
