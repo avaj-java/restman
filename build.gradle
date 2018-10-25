@@ -50,7 +50,7 @@ repositories {
 
 dependencies {
 
-    compile ( (rootProject?.findProject('common-util')) ? project(':common-util') : 'com.github.avaj-java:common-util:0.3.0' )
+    compile ( (rootProject?.findProject('common-util')) ? project(':common-util') : 'com.github.avaj-java:common-util:0.3.6.2' )
 
     //REST
 //    compile 'com.sun.jersey:jersey-server:1.12-b01' //Jersey-Server

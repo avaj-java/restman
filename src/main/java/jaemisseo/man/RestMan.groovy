@@ -25,6 +25,7 @@ class RestMan {
     String type = "*/*"
     String accept = "*/*"
     Map<String, String> headerMap = [:]
+    Map<String, List<String>> parameterMultiValueMap = [:]
     Map<String, List<String>> parameterMap = [:]
 
 
@@ -52,13 +53,13 @@ class RestMan {
     }
 
     RestMan addParameter(String key, String value){
-        if (parameterMap[key]){
-            if (parameterMap[key] instanceof List)
-                parameterMap[key] << value
+        if (parameterMultiValueMap[key]){
+            if (parameterMultiValueMap[key] instanceof List)
+                parameterMultiValueMap[key] << value
             else
-                parameterMap[key] << [parameterMap[key], value]
+                parameterMultiValueMap[key] << [parameterMultiValueMap[key], value]
         }else{
-            parameterMap[key] = [value]
+            parameterMultiValueMap[key] = [value]
         }
         return this
     }
@@ -124,17 +125,23 @@ class RestMan {
 
     String request(String url, String method, Map paramMap){
         //Generate MultiValueMap
-        return addParameter(paramMap).request(url, method)
+        if (method == GET){
+            addParameter(paramMap)
+            parameterMultiValueMap
+            return request(url, method, '')
+        }else{
+            return request(url, method, JsonOutput.toJson(paramMap))
+        }
     }
 
-    String request(String url, String method){
-        //Generate MultiValueMap
-        MultivaluedMapImpl paramMultiMap = new MultivaluedMapImpl()
-        paramMultiMap.putAll(parameterMap)
-        return request(url, JsonOutput.toJson(parameterMap), method)
-    }
+//    String request(String url, String method){
+//        //Generate MultiValueMap
+//        MultivaluedMapImpl paramMultiMap = new MultivaluedMapImpl()
+//        paramMultiMap.putAll(parameterMultiValueMap)
+//        return request(url, method, JsonOutput.toJson(parameterMultiValueMap))
+//    }
 
-    String request(String url, String jsonParam, String method){
+    String request(String url, String method, String jsonParam){
         String responseString
         try {
             ClientResponse response
@@ -144,9 +151,8 @@ class RestMan {
             header(builder, headerMap)
 
             //REQUEST
-            if (!method)
-                response = builder.post(ClientResponse.class, jsonParam)
-            else if (method == GET)
+            method = method ?: POST
+            if (method == GET)
                 response = builder.get(ClientResponse.class)
             else if (method == POST)
                 response = builder.post(ClientResponse.class, jsonParam)
@@ -162,7 +168,7 @@ class RestMan {
             responseString = response.getEntity(String.class)
 
         }catch (Exception e){
-            e.printStackTrace()
+            throw e
         }
         return responseString
     }
