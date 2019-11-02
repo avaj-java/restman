@@ -3,8 +3,8 @@ package jaemisseo.man
 import com.sun.jersey.api.client.Client
 import com.sun.jersey.api.client.ClientResponse
 import com.sun.jersey.api.client.WebResource
-import com.sun.jersey.core.util.MultivaluedMapImpl
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -13,6 +13,13 @@ import org.slf4j.LoggerFactory
  */
 class RestMan {
 
+    RestMan(){
+    }
+
+    RestMan(String baseURL){
+        setBaseURL(baseURL)
+    }
+
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     static final String GET = 'GET'
@@ -20,15 +27,21 @@ class RestMan {
     static final String PUT = 'PUT'
     static final String DELETE = 'DELETE'
 
-    String url = "http://192.168.0.55:19070/erwin_mart9g/getLibraryDepth"
-    String method = POST
+    String baseURL = ""
+    String url = ""
+    String method = GET
     String type = "*/*"
     String accept = "*/*"
     Map<String, String> headerMap = [:]
-    Map<String, List<String>> parameterMultiValueMap = [:]
     Map<String, List<String>> parameterMap = [:]
 
 
+
+
+    RestMan setBaseURL(baseURL){
+        this.baseURL = baseURL
+        return this
+    }
 
     RestMan setType(String type){
         this.type = type
@@ -53,13 +66,13 @@ class RestMan {
     }
 
     RestMan addParameter(String key, String value){
-        if (parameterMultiValueMap[key]){
-            if (parameterMultiValueMap[key] instanceof List)
-                parameterMultiValueMap[key] << value
+        if (parameterMap[key]){
+            if (parameterMap[key] instanceof List)
+                parameterMap[key] << value
             else
-                parameterMultiValueMap[key] << [parameterMultiValueMap[key], value]
+                parameterMap[key] << [parameterMap[key], value]
         }else{
-            parameterMultiValueMap[key] = [value]
+            parameterMap[key] = [value]
         }
         return this
     }
@@ -87,96 +100,239 @@ class RestMan {
     }
 
 
-    
-    /**
+
+    /**************************************************
+     *
      * GET
-     */
-    def get(String url, Map paramMap) {
-        return request(url, GET, paramMap)
+     *
+     **************************************************/
+    def get(){
+        return request(null, GET, null, null)
     }
 
-    /**
+    def get(String url){
+        return request(url, GET, null, null)
+    }
+
+    def get(String url, Map paramMap){
+        return request(url, GET, paramMap, null)
+    }
+
+    def get(String url, Map paramMap, Map headerMap){
+        return request(url, GET, paramMap, headerMap)
+    }
+
+    def parseGet(){
+        return parseGet(null, null, null)
+    }
+
+    def parseGet(String url){
+        return parseGet(url, null, null)
+    }
+
+    def parseGet(String url, Map paramMap){
+        return parseGet(url, paramMap, null)
+    }
+
+    def parseGet(String url, Map paramMap, Map headerMap){
+        String json = get(url, paramMap, headerMap)
+        return new JsonSlurper().parseText(json)
+    }
+
+
+
+    /**************************************************
+     *
      * POST
-     */
-    def post(String url, Map paramMap) {
-        return request(url, POST, paramMap)
+     *
+     **************************************************/
+    def post(){
+        return request(null, POST, null, null)
     }
 
-    /**
+    def post(String url){
+        return request(url, POST, null, null)
+    }
+
+    def post(String url, Map paramMap){
+        return request(url, POST, paramMap, null)
+    }
+
+    def post(String url, Map paramMap, Map headerMap){
+        return request(url, POST, paramMap, headerMap)
+    }
+
+    def parsePost(){
+        return parsePost(null, null, null)
+    }
+
+    def parsePost(String url){
+        return parsePost(url, null, null)
+    }
+
+    def parsePost(String url, Map paramMap){
+        return parsePost(url, paramMap, null)
+    }
+
+    def parsePost(String url, Map paramMap, Map headerMap){
+        String json = post(url, paramMap, headerMap)
+        return new JsonSlurper().parseText(json)
+    }
+
+
+
+    /**************************************************
+     *
      * PUT
-     */
+     *
+     **************************************************/
+    def put(){
+        return request(null, PUT, null, null)
+    }
+
+    def put(String url){
+        return request(url, PUT, null, null)
+    }
+
     def put(String url, Map paramMap){
-        return request(url, PUT, paramMap)
+        return request(url, PUT, paramMap, null)
     }
 
-    /**
+    def put(String url, Map paramMap, Map headerMap){
+        return request(url, PUT, paramMap, headerMap)
+    }
+
+    def parsePut(){
+        return parsePut(null, null, null)
+    }
+
+    def parsePut(String url){
+        return parsePut(url, null, null)
+    }
+
+    def parsePut(String url, Map paramMap){
+        return parsePut(url, paramMap, null)
+    }
+
+    def parsePut(String url, Map paramMap, Map headerMap){
+        String json = put(url, paramMap, headerMap)
+        return new JsonSlurper().parseText(json)
+    }
+
+
+
+    /**************************************************
+     *
      * DELETE
-     */
+     *
+     **************************************************/
+    def delete(){
+        return request(null, DELETE, null, null)
+    }
+
+    def delete(String url){
+        return request(url, DELETE, null, null)
+    }
+
     def delete(String url, Map paramMap){
-        return request(url, DELETE, paramMap)
+        return request(url, DELETE, paramMap, null)
     }
 
-    /**
+    def delete(String url, Map paramMap, Map headerMap){
+        return request(url, DELETE, paramMap, headerMap)
+    }
+
+    def parseDelete(){
+        return parseDelete(null, null, null)
+    }
+
+    def parseDelete(String url){
+        return parseDelete(url, null, null)
+    }
+
+    def parseDelete(String url, Map paramMap){
+        return parseDelete(url, paramMap, null)
+    }
+
+    def parseDelete(String url, Map paramMap, Map headerMap){
+        String json = delete(url, paramMap, headerMap)
+        return new JsonSlurper().parseText(json)
+    }
+
+
+
+    /**************************************************
+     *
      * REQUEST
-     */
-    String request(String url, Map paramMap){
-        return request(url, method, paramMap)
+     *
+     **************************************************/
+    String request(String url, Map paramMap, Map headerMap){
+        return request(url, method, paramMap, headerMap)
     }
 
-    String request(String url, String method, Map paramMap){
-        //Generate MultiValueMap
-        if (method == GET){
-            addParameter(paramMap)
-            parameterMultiValueMap
-            return request(url, method, '')
-        }else{
-            return request(url, method, JsonOutput.toJson(paramMap))
-        }
-    }
-
-//    String request(String url, String method){
-//        //Generate MultiValueMap
-//        MultivaluedMapImpl paramMultiMap = new MultivaluedMapImpl()
-//        paramMultiMap.putAll(parameterMultiValueMap)
-//        return request(url, method, JsonOutput.toJson(parameterMultiValueMap))
-//    }
-
-    String request(String url, String method, String jsonParam){
+    String request(String url, String method, Map paramMap, Map headerMap){
+        //- Request
         String responseString
-        try {
-            ClientResponse response
-            Client client = Client.create()
-            WebResource webResource = client.resource(url)
-            WebResource.Builder builder = webResource.type(type).accept(accept)
-            header(builder, headerMap)
-
-            //REQUEST
-            method = method ?: POST
-            if (method == GET)
+        WebResource.Builder builder
+        ClientResponse response
+        method = method ?: POST
+        switch (method){
+            case GET:
+                builder = build(url, paramMap, headerMap)
                 response = builder.get(ClientResponse.class)
-            else if (method == POST)
-                response = builder.post(ClientResponse.class, jsonParam)
-            else if (method == PUT)
-                response = builder.put(ClientResponse.class, jsonParam)
-            else if (method == DELETE)
-                response = builder.delete(ClientResponse.class, jsonParam)
-
-            //CHECK ERROR
-            checkError(response)
-
-            //RESPONSE
-            responseString = response.getEntity(String.class)
-
-        }catch (Exception e){
-            throw e
+                break
+            case POST:
+                String requestBody = JsonOutput.toJson(paramMap)
+                builder = build(url, [:], headerMap)
+                response = builder.post(ClientResponse.class, requestBody)
+                break
+            case PUT:
+                String requestBody = JsonOutput.toJson(paramMap)
+                builder = build(url, [:], headerMap)
+                response = builder.post(ClientResponse.class, requestBody)
+                break
+            case DELETE:
+                addParameter(paramMap)
+                builder = build(url, parameterMap, headerMap)
+                response = builder.post(ClientResponse.class)
+                break
         }
+        //- CHECK ERROR
+        checkError(response)
+        //- RESPONSE
+        responseString = response.getEntity(String.class)
         return responseString
     }
 
+    WebResource.Builder build(String url, Map<String, Object> paramMap, Map<String, String> headerMap){
+        try {
+            Client client = Client.create()
+            url = baseURL+ (baseURL.endsWith('/')?'':'/') +(url?:'')
+            WebResource webResource = client.resource(url)
+            webResource = parameter(webResource, getParameterMap())
+            webResource = parameter(webResource, paramMap)
+            WebResource.Builder builder = webResource.type(type).accept(accept)
+            header(builder, getHeaderMap())
+            header(builder, headerMap)
+            return builder
+        }catch (Exception e){
+            throw e
+        }
+    }
 
+    private WebResource parameter(WebResource webResource, Map parameterMap){
+        parameterMap?.each{
+            List valueList = (it.value instanceof List) ? it.value : [it.value]
+            valueList.each{ value ->
+                value = (value instanceof String) ? value : String.valueOf(value)
+                webResource = webResource.queryParam(it.key, value)
+            }
+        }
+        return webResource
+    }
 
     private header(WebResource.Builder builder, Map headerMap){
-        headerMap.each{
+        headerMap?.each{
             builder.header(it.key, it.value)
         }
     }
@@ -187,102 +343,5 @@ class RestMan {
         }
         return true
     }
-
-//    private void updateCustomer(Customer customer) {
-//        try {
-//            URL url = new URL("http://www.example.com/customers");
-//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//            connection.setDoOutput(true);
-//            connection.setInstanceFollowRedirects(false);
-//            connection.setRequestMethod("PUT");
-//            connection.setRequestProperty("Content-Type", "application/xml");
-//
-//            OutputStream os = connection.getOutputStream();
-//            jaxbContext.createMarshaller().marshal(customer, os);
-//            os.flush();
-//
-//            connection.getResponseCode();
-//            connection.disconnect();
-//        } catch(Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//
-//    public String HeaderSender(HttpServletRequest req) {
-//        println '///////////////////////'
-//        println '///// REST Sender /////'
-//        println '///////////////////////'
-//        RestTemplate restTemplate = new RestTemplate();
-//        ResponseEntity<String> resEnt
-//        HttpMethod httpMethod
-//        String[] reqAtts = req.getParameterValues('reqAtt')
-//        String[] reqVals = req.getParameterValues('reqVal')
-//        String[] hdAtts = req.getParameterValues('hdAtt')
-//        String[] hdVals = req.getParameterValues('hdVal')
-//        String url = req.getParameter('url')
-//        String method = req.getParameter('method')
-//
-//        // httpMethod
-//        if (method.equals('GET')) httpMethod = HttpMethod.GET
-//        else if (method.equals('POST')) httpMethod = HttpMethod.POST
-//        else if (method.equals('PUT')) httpMethod = HttpMethod.PUT
-//        else if (method.equals('DELETE')) httpMethod = HttpMethod.DELETE
-//        else  httpMethod = HttpMethod.GET
-//
-//        // Change URL
-//        Map<String, String> vars = new HashMap<String, String>();
-//
-//        // request parameter
-//        MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-//        if (reqAtts && reqVals) {
-//            if (httpMethod == HttpMethod.GET){
-//                if (url.indexOf('?') == -1) url += '?'
-//                reqAtts.eachWithIndex{ String att, int idx->
-//                    url += "&${att}=${reqVals[idx]}"
-//                }
-//                for (int i = 0; i < reqAtts.size(); i++) {
-//                    if (!reqVals[i]) reqVals[i]='null'
-//                    params.add(reqAtts[i], reqVals[i]);
-//                }
-//            }else{
-//                for (int i = 0; i < reqAtts.size(); i++) {
-//                    if (!reqVals[i]) reqVals[i]='null'
-//                    params.add(reqAtts[i], reqVals[i]);
-//                }
-//            }
-//        }
-//
-//        // header parameter
-//        MultiValueMap<String, String> customHeaders = new LinkedMultiValueMap<String, String>();
-//        if (hdAtts && hdVals){
-//            for (int i=0; i<hdAtts.size(); i++){
-//                if (!hdVals[i]) hdVals[i]='null'
-//                customHeaders.add(hdAtts[i], hdVals[i])
-//            }
-//        }
-//
-//        // LOG
-//        println 'params: ' + params.toString()
-//        println 'headers: ' + customHeaders.toString()
-//        println 'httpMethod: ' + httpMethod.toString()
-//        println 'url: ' + url
-//        println ''
-//
-//        //send request and header and get json
-//        try{
-//            resEnt = restTemplate.exchange(url, httpMethod, new HttpEntity<MultiValueMap<String, String>>(params, customHeaders), String.class, vars);
-//        }catch(ConnectException e){
-//            e.printStackTrace()
-//            return 'error: Connection refused: connect'
-//        }catch(Exception e){
-//            e.printStackTrace()
-//            return 'error: Maybe, Server is not running'
-//        }
-//
-//        // json 받기
-//        String json = (String)resEnt.getBody()
-//        return json
-//    }
 
 }

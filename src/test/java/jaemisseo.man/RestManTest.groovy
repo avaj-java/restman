@@ -13,12 +13,19 @@ class RestManTest {
     @Test
     @Ignore
     void test(){
-        String response = new RestMan().setType('application/json').request('http://localhost:8080/server/login', [
+        String response = new RestMan().setType('application/json').post('http://localhost:8080/server/login', [
                 email: "111",
                 userPublicKey: "@222",
                 signature: "333"
         ])
         println response
+    }
+
+    @Test
+    @Ignore
+    void get(){
+        def data = new RestMan('http://localhost:28080/jelly').parseGet('/api/search-product', [query:'A4', from:'0', size:'20'])
+        println data
     }
 
 }
