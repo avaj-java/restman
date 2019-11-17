@@ -26,6 +26,9 @@ class RestManTest {
     void get(){
         def data = new RestMan('http://localhost:28080/jelly').parseGet('/api/search-product', [query:'A4', from:'0', size:'20'])
         println data
+
+        def data2 = new RestMan('http://localhost:28080/jelly').get('/api/get-count-index')
+        println data2
     }
 
 }
