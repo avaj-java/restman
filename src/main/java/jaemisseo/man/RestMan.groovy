@@ -20,7 +20,7 @@ class RestMan {
         setBaseURL(baseURL)
     }
 
-    final Logger logger = LoggerFactory.getLogger(this.getClass());
+    static final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     static final String GET = 'GET'
     static final String POST = 'POST'
@@ -276,6 +276,8 @@ class RestMan {
         WebResource.Builder builder
         ClientResponse response
         method = method ?: POST
+        //TODO: how to log
+        logger.debug "${url}"
         switch (method){
             case GET:
                 builder = build(url, paramMap, headerMap)
