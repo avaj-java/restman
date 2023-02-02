@@ -1,3 +1,5 @@
+package jaemisseo.man
+
 import jaemisseo.man.RestMan
 import org.junit.Ignore
 import org.junit.Test
