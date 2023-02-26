@@ -53,9 +53,12 @@ repositories {
     maven { url 'https://repo.spring.io/snapshot' }
 }
 
+String coreBasePath = project.hasProperty("coreBasePath") ? project.getProperty("coreBasePath") : ""
+
 dependencies {
 
-    compile ( (rootProject?.findProject('common-util')) ? project(':common-util') : 'com.github.avaj-java:common-util:0.4.2' )
+//    compile ( (rootProject?.findProject('common-util')) ? project(':common-util') : 'com.github.avaj-java:common-util:0.4.3' )
+    compile ( (rootProject?.findProject("${coreBasePath}:common-util")) ? project(":${coreBasePath}:common-util") : 'com.github.avaj-java:common-util:0.4.3' )
 
     //REST
 //    compile 'com.sun.jersey:jersey-server:1.12-b01' //Jersey-Server
